@@ -1,0 +1,12 @@
+F:\C#\binsupport\binsupport\bin\Debug\binsupport.exe.config
+F:\C#\binsupport\binsupport\bin\Debug\binsupport.exe
+F:\C#\binsupport\binsupport\bin\Debug\binsupport.pdb
+F:\C#\binsupport\binsupport\obj\Debug\binsupport.csprojResolveAssemblyReference.cache
+F:\C#\binsupport\binsupport\obj\Debug\binsupport.Form1.resources
+F:\C#\binsupport\binsupport\obj\Debug\binsupport.Properties.Resources.resources
+F:\C#\binsupport\binsupport\obj\Debug\binsupport.csproj.GenerateResource.Cache
+F:\C#\binsupport\binsupport\obj\Debug\binsupport.csproj.CoreCompileInputs.cache
+F:\C#\binsupport\binsupport\obj\Debug\binsupport.exe
+F:\C#\binsupport\binsupport\obj\Debug\binsupport.pdb
+F:\C#\binsupport\binsupport\bin\Debug\Newtonsoft.Json.dll
+F:\C#\binsupport\binsupport\bin\Debug\Newtonsoft.Json.xml

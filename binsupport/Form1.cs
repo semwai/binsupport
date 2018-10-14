@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using System.IO.Ports;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
+
 namespace binsupport
 {
     public partial class Form1 : Form
@@ -38,6 +41,22 @@ namespace binsupport
                 var configfile = System.IO.File.Create(path + "\\config.json");  
                 System.IO.File.Create(path + "\\C\\start.c").Close();
                 System.IO.File.Create(path + "\\Asm\\boot.asm").Close();
+                System.IO.File.Create(path + "\\Res\\boot.bin").Close();
+                System.IO.File.Create(path + "\\Res\\start.bin").Close();
+                var boottablefile = System.IO.File.Create(path + "\\Res\\boottable.bin");
+                boottable mytable = new boottable();
+                mytable.setLBA(0, 2048 * 1024); //1mb
+                boottablefile.Write(ObjectToByteArray(mytable),0,16);
+                boottablefile.Close();
+                var _55AA = System.IO.File.Create(path + "\\Res\\55AA.bin");
+                _55AA.WriteByte(0x55);
+                _55AA.WriteByte(0xAA);
+                _55AA.Close();
+
+                dataGridView1.Rows.Add("boot.bin", 0);
+                dataGridView1.Rows.Add("boottable.bin", 446);
+                dataGridView1.Rows.Add("55AA.bin", 510);
+                dataGridView1.Rows.Add("start.bin", 512);
 
 
                 settings JSONsett = new settings();
@@ -54,16 +73,20 @@ namespace binsupport
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == 2 )
+            try
             {
-                dataGridView1.Rows.RemoveAt(e.RowIndex);
-                return;
+                if (e.ColumnIndex == 2)
+                {
+                    dataGridView1.Rows.RemoveAt(e.RowIndex);
+                    return;
+                }
+                openFileDialog1.ShowDialog();
+                if (openFileDialog1.SafeFileName.Length == 0) return;
+                DataGridViewButtonCell txtxCell = (DataGridViewButtonCell)dataGridView1.Rows[e.RowIndex].Cells[0];
+                txtxCell.Value = openFileDialog1.SafeFileName;
+                //MessageBox.Show(e.RowIndex.ToString());
             }
-            openFileDialog1.ShowDialog();
-            if (openFileDialog1.SafeFileName.Length == 0) return;
-            DataGridViewButtonCell txtxCell = (DataGridViewButtonCell)dataGridView1.Rows[e.RowIndex].Cells[0];
-            txtxCell.Value = openFileDialog1.SafeFileName;
-            //MessageBox.Show(e.RowIndex.ToString());
+            catch (Exception) { }
         }
 
         private void toolStripButton1_Click(object sender, EventArgs e)
@@ -74,6 +97,19 @@ namespace binsupport
                 Thread.Sleep(20);
             }
             
+        }
+
+
+        public byte[] ObjectToByteArray(object obj)
+        {
+            if (obj == null)
+                return null;
+            BinaryFormatter bf = new BinaryFormatter();
+            using (MemoryStream ms = new MemoryStream())
+            {
+                bf.Serialize(ms, obj);
+                return ms.ToArray();
+            }
         }
     }
 
@@ -92,5 +128,39 @@ namespace binsupport
             Filename = file;
             Addres = adr;
         }
+
+
+
+
     }
+    [Serializable]
+    public class boottable
+    {
+
+        public byte mask { get; set; }
+        public byte gol { get; set; }
+        public byte sec { get; set; }
+        public byte cil { get; set; }
+        public byte type { get; set; }
+        public byte gol_end { get; set; }
+        public byte sec_end { get; set; }
+        public byte cin_end { get; set; }
+        public Int32 LBAaddr { get; set; }
+        public Int32 LBAcount { get; set; }
+        public void setLBA(int lbaaddr,int lbacount)
+        {
+            gol = 0;
+            sec = 0;
+            cil = 0;
+            gol_end = 0;
+            cin_end = 0;
+            sec_end = 0;
+            LBAaddr = lbaaddr;
+            LBAcount = lbacount;
+            mask = 0x80; 
+            type = 0x7f; //учебный раздел
+        }
+
+    }
+    
 }

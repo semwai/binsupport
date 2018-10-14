@@ -10,3 +10,16 @@ F:\C#\binsupport\binsupport\obj\Debug\binsupport.exe
 F:\C#\binsupport\binsupport\obj\Debug\binsupport.pdb
 F:\C#\binsupport\binsupport\bin\Debug\Newtonsoft.Json.dll
 F:\C#\binsupport\binsupport\bin\Debug\Newtonsoft.Json.xml
+D:\VSprojects\binsupport\binsupport\bin\Debug\binsupport.exe.config
+D:\VSprojects\binsupport\binsupport\bin\Debug\binsupport.exe
+D:\VSprojects\binsupport\binsupport\bin\Debug\binsupport.pdb
+D:\VSprojects\binsupport\binsupport\bin\Debug\Newtonsoft.Json.dll
+D:\VSprojects\binsupport\binsupport\bin\Debug\Newtonsoft.Json.xml
+D:\VSprojects\binsupport\binsupport\obj\Debug\binsupport.csprojAssemblyReference.cache
+D:\VSprojects\binsupport\binsupport\obj\Debug\binsupport.Form1.resources
+D:\VSprojects\binsupport\binsupport\obj\Debug\binsupport.Properties.Resources.resources
+D:\VSprojects\binsupport\binsupport\obj\Debug\binsupport.csproj.GenerateResource.cache
+D:\VSprojects\binsupport\binsupport\obj\Debug\binsupport.csproj.CoreCompileInputs.cache
+D:\VSprojects\binsupport\binsupport\obj\Debug\binsupport.csproj.CopyComplete
+D:\VSprojects\binsupport\binsupport\obj\Debug\binsupport.exe
+D:\VSprojects\binsupport\binsupport\obj\Debug\binsupport.pdb

@@ -12,12 +12,13 @@ using Newtonsoft.Json;
 using System.IO.Ports;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using System.Diagnostics;
 
 namespace binsupport
 {
     public partial class Form1 : Form
     {
-       
+        string path = @"C:\Users\Semwai\Desktop\1";
         public Form1()
         {
             InitializeComponent();
@@ -26,7 +27,7 @@ namespace binsupport
         private void создатьПроектToolStripMenuItem_Click(object sender, EventArgs e)
         {
             folderBrowserDialog1.ShowDialog();
-            string path = folderBrowserDialog1.SelectedPath;
+            path = folderBrowserDialog1.SelectedPath;
             System.IO.FileStream settings;
            // MessageBox.Show(folderBrowserDialog1.SelectedPath);return;
             if (path.Length > 0)
@@ -111,6 +112,42 @@ namespace binsupport
                 return ms.ToArray();
             }
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Process Proc = new Process();
+            Proc.StartInfo.FileName = "explorer";
+            Proc.StartInfo.Arguments = path;
+            Proc.Start();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+            IEnumerable<string> files =  System.IO.Directory.EnumerateFiles(path+"\\C\\");
+            string strCmdText = "";
+            foreach (var f in files)
+            {
+                // MessageBox.Show(f);
+                strCmdText += f + " ";
+            }
+          
+            strCmdText+= "-nostdlib -masm=intel -o " + path + "\\Res\\start.bin";
+            
+            System.Diagnostics.Process.Start("gcc.exe", strCmdText);
+            Thread.Sleep(1000);
+           
+            strCmdText = "-f bin " + path + "\\Asm\\boot.asm -o " + path + "\\res\\boot.bin";
+           // MessageBox.Show(strCmdText);
+            System.Diagnostics.Process.Start("nasm.exe", strCmdText);
+            Thread.Sleep(1000);
+
+            strCmdText = "-O binary "+path+"\\Res\\start.bin";
+            System.Diagnostics.Process.Start("objcopy.exe", strCmdText);
+
+        }
+
+       
     }
 
     public class settings

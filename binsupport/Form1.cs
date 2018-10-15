@@ -19,16 +19,19 @@ namespace binsupport
     public partial class Form1 : Form
     {
         string path = @"C:\Users\Semwai\Desktop\1";
+        
+         
         public Form1()
         {
             InitializeComponent();
+            
         }
 
         private void создатьПроектToolStripMenuItem_Click(object sender, EventArgs e)
         {
             folderBrowserDialog1.ShowDialog();
             path = folderBrowserDialog1.SelectedPath;
-            System.IO.FileStream settings;
+             
             // MessageBox.Show(folderBrowserDialog1.SelectedPath);return;
             if (path.Length == 0)
             {
@@ -46,25 +49,29 @@ namespace binsupport
             System.IO.Directory.CreateDirectory(path + "\\Res");
             var configfile = System.IO.File.Create(path + "\\config.json");  
             System.IO.File.Open(path + "\\C\\start.c",FileMode.OpenOrCreate).Close();
-            System.IO.File.Open(path + "\\Asm\\boot.asm", FileMode.OpenOrCreate).Close();
-            System.IO.File.Open(path + "\\Res\\boot.bin", FileMode.OpenOrCreate).Close();
-            System.IO.File.Open(path + "\\Res\\start.bin", FileMode.OpenOrCreate).Close();
+            var bottasm = System.IO.File.Open(path + "\\Asm\\boot.asm", FileMode.OpenOrCreate);
+            var bootbin = System.IO.File.Open(path + "\\Res\\boot.bin", FileMode.OpenOrCreate);
+            var startbin = System.IO.File.Open(path + "\\Res\\start.bin", FileMode.OpenOrCreate);
             var boottablefile = System.IO.File.Create(path + "\\Res\\boottable.bin");
             boottable mytable = new boottable();
             mytable.setLBA(0, 2048 * 1024); //1mb
             boottablefile.Write(ObjectToByteArray(mytable),0,16);
-            boottablefile.Close();
+            
             var _55AA = System.IO.File.Create(path + "\\Res\\55AA.bin");
             _55AA.WriteByte(0x55);
             _55AA.WriteByte(0xAA);
+
+
+            dataGridView1.Rows.Add(path + "\\Res\\boot.bin", "0");//,          Int32.Parse(dataGridView1.Rows[0].Cells[1].Value.ToString()) +  bootbin.Length);
+            dataGridView1.Rows.Add(path + "\\Res\\boottable.bin", "446");//, Int32.Parse(dataGridView1.Rows[1].Cells[1].Value.ToString()) + boottablefile.Length);
+            dataGridView1.Rows.Add(path + "\\Res\\55AA.bin", "510");//,      Int32.Parse(dataGridView1.Rows[2].Cells[1].Value.ToString()) + _55AA.Length);
+            dataGridView1.Rows.Add(path + "\\Res\\start.bin", "512");//,     Int32.Parse(dataGridView1.Rows[3].Cells[1].Value.ToString()) + startbin.Length);
+            boottablefile.Close();
+            startbin.Close();
+            bootbin.Close();
+            boottablefile.Close();
+            bottasm.Close();
             _55AA.Close();
-
-            dataGridView1.Rows.Add(path+"\\boot.bin", 0);
-            dataGridView1.Rows.Add(path + "\\boottable.bin", 446);
-            dataGridView1.Rows.Add(path + "\\55AA.bin", 510);
-            dataGridView1.Rows.Add(path + "\\start.bin", 512);
-
-
             settings JSONsett = new settings();
             JSONsett.Projectname = "zagr prog 1";
             JSONsett.Resources = new res[] { new res(0x200, "c:\\1\\res\\1.txt"), new res(0x400, "c:\\1\\res\\2.txt") };
@@ -80,10 +87,11 @@ namespace binsupport
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex == -1) return;
-            MessageBox.Show(e.ColumnIndex.ToString());
+            // MessageBox.Show(e.ColumnIndex.ToString());
+             
             try
             {
-                if (e.ColumnIndex == 2)
+                if (e.ColumnIndex == 3)
                 {
                     dataGridView1.Rows.RemoveAt(e.RowIndex);
                     return;
@@ -161,11 +169,41 @@ namespace binsupport
             {
                 DataGridViewButtonCell fileButton = (DataGridViewButtonCell)dataGridView1.Rows[i].Cells[0];
                 DataGridViewTextBoxCell fileOffset = (DataGridViewTextBoxCell)dataGridView1.Rows[i].Cells[1];
-                MessageBox.Show(fileButton.Value.ToString()+" "+ fileOffset.Value.ToString());
+                //MessageBox.Show(fileButton.Value.ToString()+" "+ fileOffset.Value.ToString());
+               
+                try
+                {
+                    var file = System.IO.File.Open(dataGridView1.Rows[i].Cells[0].Value.ToString(), FileMode.Open);
+
+                    byte[] array = new byte[file.Length];
+                    file.Read(array, 0, (int)file.Length);
+                    IMGout.Position = Int32.Parse(dataGridView1.Rows[i].Cells[1].Value.ToString());
+                    IMGout.Write(array, 0, (int)file.Length);
+                    file.Close();
+                }
+                catch (Exception) { }
+               
             }
+
+            IMGout.Close();
         }
 
-       
+        private void dataGridView1_Click(object sender, EventArgs e)
+        {
+           // dataGridView1.Sort(dataGridView1.Columns[1], ListSortDirection.Ascending);
+            for (int i = 0; i < dataGridView1.RowCount - 1; i++)
+            {
+                try
+                {
+                    var file = System.IO.File.Open(dataGridView1.Rows[i].Cells[0].Value.ToString(), FileMode.Open);
+
+                    dataGridView1.Rows[i].Cells[2].Value = file.Length + Int32.Parse(dataGridView1.Rows[i].Cells[1].Value.ToString());
+
+                    file.Close();
+                }
+                catch (Exception) { }
+            }
+        }
     }
 
     public class settings

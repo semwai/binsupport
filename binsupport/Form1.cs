@@ -29,51 +29,58 @@ namespace binsupport
             folderBrowserDialog1.ShowDialog();
             path = folderBrowserDialog1.SelectedPath;
             System.IO.FileStream settings;
-           // MessageBox.Show(folderBrowserDialog1.SelectedPath);return;
-            if (path.Length > 0)
+            // MessageBox.Show(folderBrowserDialog1.SelectedPath);return;
+            if (path.Length == 0)
             {
-               /* if (System.IO.File.Exists(path + "\\config.json"))
-                {
-                    MessageBox.Show("В данной папке уже существует проект, выберите другую папку или удалите старый проект.");
-                }*/
-                System.IO.Directory.CreateDirectory(path + "\\C");
-                System.IO.Directory.CreateDirectory(path + "\\Asm");
-                System.IO.Directory.CreateDirectory(path + "\\Res");
-                var configfile = System.IO.File.Create(path + "\\config.json");  
-                System.IO.File.Create(path + "\\C\\start.c").Close();
-                System.IO.File.Create(path + "\\Asm\\boot.asm").Close();
-                System.IO.File.Create(path + "\\Res\\boot.bin").Close();
-                System.IO.File.Create(path + "\\Res\\start.bin").Close();
-                var boottablefile = System.IO.File.Create(path + "\\Res\\boottable.bin");
-                boottable mytable = new boottable();
-                mytable.setLBA(0, 2048 * 1024); //1mb
-                boottablefile.Write(ObjectToByteArray(mytable),0,16);
-                boottablefile.Close();
-                var _55AA = System.IO.File.Create(path + "\\Res\\55AA.bin");
-                _55AA.WriteByte(0x55);
-                _55AA.WriteByte(0xAA);
-                _55AA.Close();
+                return;
+            }
+            /* if (System.IO.File.Exists(path + "\\config.json"))
+            {
+                MessageBox.Show("В данной папке уже существует проект, выберите другую папку или удалите старый проект.");
+            }*/
+            button1.Enabled = true;
+            button2.Enabled = true;
+            dataGridView1.Enabled = true;
+            System.IO.Directory.CreateDirectory(path + "\\C");
+            System.IO.Directory.CreateDirectory(path + "\\Asm");
+            System.IO.Directory.CreateDirectory(path + "\\Res");
+            var configfile = System.IO.File.Create(path + "\\config.json");  
+            System.IO.File.Open(path + "\\C\\start.c",FileMode.OpenOrCreate).Close();
+            System.IO.File.Open(path + "\\Asm\\boot.asm", FileMode.OpenOrCreate).Close();
+            System.IO.File.Open(path + "\\Res\\boot.bin", FileMode.OpenOrCreate).Close();
+            System.IO.File.Open(path + "\\Res\\start.bin", FileMode.OpenOrCreate).Close();
+            var boottablefile = System.IO.File.Create(path + "\\Res\\boottable.bin");
+            boottable mytable = new boottable();
+            mytable.setLBA(0, 2048 * 1024); //1mb
+            boottablefile.Write(ObjectToByteArray(mytable),0,16);
+            boottablefile.Close();
+            var _55AA = System.IO.File.Create(path + "\\Res\\55AA.bin");
+            _55AA.WriteByte(0x55);
+            _55AA.WriteByte(0xAA);
+            _55AA.Close();
 
-                dataGridView1.Rows.Add("boot.bin", 0);
-                dataGridView1.Rows.Add("boottable.bin", 446);
-                dataGridView1.Rows.Add("55AA.bin", 510);
-                dataGridView1.Rows.Add("start.bin", 512);
+            dataGridView1.Rows.Add(path+"\\boot.bin", 0);
+            dataGridView1.Rows.Add(path + "\\boottable.bin", 446);
+            dataGridView1.Rows.Add(path + "\\55AA.bin", 510);
+            dataGridView1.Rows.Add(path + "\\start.bin", 512);
 
 
-                settings JSONsett = new settings();
-                JSONsett.Projectname = "zagr prog 1";
-                JSONsett.Resources = new res[] { new res(0x200, "c:\\1\\res\\1.txt"), new res(0x400, "c:\\1\\res\\2.txt") };
+            settings JSONsett = new settings();
+            JSONsett.Projectname = "zagr prog 1";
+            JSONsett.Resources = new res[] { new res(0x200, "c:\\1\\res\\1.txt"), new res(0x400, "c:\\1\\res\\2.txt") };
                
 
-                System.IO.StreamWriter setting = new System.IO.StreamWriter(configfile);  //(path + "\\config.json");
-                setting.Write(JsonConvert.SerializeObject(JSONsett));
-                setting.Close();
+            System.IO.StreamWriter setting = new System.IO.StreamWriter(configfile);  //(path + "\\config.json");
+            setting.Write(JsonConvert.SerializeObject(JSONsett));
+            setting.Close();
                 
-            }
+            
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex == -1) return;
+            MessageBox.Show(e.ColumnIndex.ToString());
             try
             {
                 if (e.ColumnIndex == 2)
@@ -84,7 +91,7 @@ namespace binsupport
                 openFileDialog1.ShowDialog();
                 if (openFileDialog1.SafeFileName.Length == 0) return;
                 DataGridViewButtonCell txtxCell = (DataGridViewButtonCell)dataGridView1.Rows[e.RowIndex].Cells[0];
-                txtxCell.Value = openFileDialog1.SafeFileName;
+                txtxCell.Value = openFileDialog1.FileName;
                 //MessageBox.Show(e.RowIndex.ToString());
             }
             catch (Exception) { }
@@ -140,11 +147,22 @@ namespace binsupport
             strCmdText = "-f bin " + path + "\\Asm\\boot.asm -o " + path + "\\res\\boot.bin";
            // MessageBox.Show(strCmdText);
             System.Diagnostics.Process.Start("nasm.exe", strCmdText);
-            Thread.Sleep(1000);
+            Thread.Sleep(3000);
 
-            strCmdText = "-O binary "+path+"\\Res\\start.bin";
-            System.Diagnostics.Process.Start("objcopy.exe", strCmdText);
+            strCmdText = " -O binary "+path+"\\Res\\start.bin";
+            //MessageBox.Show(strCmdText);
+            System.Diagnostics.Process.Start("objcopy.exe", strCmdText).WaitForExit(3000);
 
+
+            var IMGout = System.IO.File.Create(path + "\\disk.img");
+            
+
+           for (int i=0; i< dataGridView1.Rows.Count-1; i++)
+            {
+                DataGridViewButtonCell fileButton = (DataGridViewButtonCell)dataGridView1.Rows[i].Cells[0];
+                DataGridViewTextBoxCell fileOffset = (DataGridViewTextBoxCell)dataGridView1.Rows[i].Cells[1];
+                MessageBox.Show(fileButton.Value.ToString()+" "+ fileOffset.Value.ToString());
+            }
         }
 
        

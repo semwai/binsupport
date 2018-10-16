@@ -26,7 +26,12 @@ namespace binsupport
             InitializeComponent();
             
         }
-
+        private void EnableInterface()
+        {
+            button1.Enabled = true;
+            button2.Enabled = true;
+            dataGridView1.Enabled = true;
+        }
         private void создатьПроектToolStripMenuItem_Click(object sender, EventArgs e)
         {
             folderBrowserDialog1.ShowDialog();
@@ -41,9 +46,7 @@ namespace binsupport
             {
                 MessageBox.Show("В данной папке уже существует проект, выберите другую папку или удалите старый проект.");
             }*/
-            button1.Enabled = true;
-            button2.Enabled = true;
-            dataGridView1.Enabled = true;
+            EnableInterface();
             System.IO.Directory.CreateDirectory(path + "\\C");
             System.IO.Directory.CreateDirectory(path + "\\Asm");
             System.IO.Directory.CreateDirectory(path + "\\Res");
@@ -72,13 +75,14 @@ namespace binsupport
             boottablefile.Close();
             bottasm.Close();
             _55AA.Close();
-            settings JSONsett = new settings();
+            settings JSONsett = new settings(2);
             JSONsett.Projectname = "zagr prog 1";
+            JSONsett.Count = 2;
             JSONsett.Resources = new res[] { new res(0x200, "c:\\1\\res\\1.txt"), new res(0x400, "c:\\1\\res\\2.txt") };
                
 
             System.IO.StreamWriter setting = new System.IO.StreamWriter(configfile);  //(path + "\\config.json");
-            setting.Write(JsonConvert.SerializeObject(JSONsett));
+           // setting.Write(JsonConvert.SerializeObject(JSONsett));
             setting.Close();
                 
             
@@ -204,12 +208,70 @@ namespace binsupport
                 catch (Exception) { }
             }
         }
+
+        private void сохранитьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+           // MessageBox.Show(dataGridView1.Rows.Count.ToString());
+            var config = System.IO.File.Open(path + "\\config.json", FileMode.Create);
+
+            settings JSONconf = new settings(dataGridView1.Rows.Count-1);
+             
+            //JSONconf.Resources[1].Filename = "aaa";
+            JSONconf.Projectname = "Tardigrada";
+            JSONconf.Count = dataGridView1.Rows.Count-1;
+            for (int i = 0; i < dataGridView1.Rows.Count-1; i++)
+            {
+                JSONconf.Resources[i] = new res(0,"");
+                DataGridViewButtonCell  fileButton = (DataGridViewButtonCell)dataGridView1.Rows[i].Cells[0];
+                DataGridViewTextBoxCell offset = (DataGridViewTextBoxCell)dataGridView1.Rows[i].Cells[1];
+               // MessageBox.Show(fileButton.Value.ToString());
+                JSONconf.Resources[i].Filename = fileButton.Value.ToString();// dataGridView1.Rows[i].Cells[0].Value.ToString();
+                JSONconf.Resources[i].Addres =  Int32.Parse(offset.Value.ToString());// Int32.Parse(dataGridView1.Rows[i].Cells[1].Value.ToString());
+            }
+
+           // MessageBox.Show(JsonConvert.SerializeObject(JSONconf));
+            System.IO.StreamWriter setting = new System.IO.StreamWriter(config);  //(path + "\\config.json");
+            setting.Write(JsonConvert.SerializeObject(JSONconf));
+            setting.Close();
+            config.Close();
+        }
+
+        private void Form1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.S)
+                сохранитьToolStripMenuItem_Click(null, null);
+        }
+
+        private void загрузитьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            folderBrowserDialog1.ShowDialog();
+            path = folderBrowserDialog1.SelectedPath;
+            var JSONfile = System.IO.File.OpenRead(path + "\\config.json");
+           // System.IO.StreamWriter setting = new System.IO.StreamWriter(JSONfile);
+            byte[] byteText = new byte[JSONfile.Length];
+            JSONfile.Read(byteText, 0, (int)JSONfile.Length);
+            string text = System.Text.Encoding.Default.GetString(byteText);
+            settings project = JsonConvert.DeserializeObject<settings>(text);
+
+            MessageBox.Show(project.Projectname);
+            for (int i = 0; i < project.Count; i++)
+            {
+                dataGridView1.Rows.Add(project.Resources[i].Filename, project.Resources[i].Addres);
+            }
+            EnableInterface();
+        }
     }
 
     public class settings
     {
         public string Projectname { get; set; }
+        public int Count { get; set; }
         public res[] Resources { get; set; }
+        
+        public settings(int n)
+        {
+            Resources = new res[n];
+        }
         
     }
     public class res //добавляемые ресурсы в img файл,такие как шрифты, картинки и прочий мусор

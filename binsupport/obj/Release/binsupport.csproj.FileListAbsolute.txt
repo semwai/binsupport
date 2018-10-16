@@ -1,0 +1,11 @@
+F:\C#\binsupport\binsupport\bin\Release\binsupport.exe.config
+F:\C#\binsupport\binsupport\bin\Release\binsupport.exe
+F:\C#\binsupport\binsupport\bin\Release\binsupport.pdb
+F:\C#\binsupport\binsupport\bin\Release\Newtonsoft.Json.dll
+F:\C#\binsupport\binsupport\bin\Release\Newtonsoft.Json.xml
+F:\C#\binsupport\binsupport\obj\Release\binsupport.Form1.resources
+F:\C#\binsupport\binsupport\obj\Release\binsupport.Properties.Resources.resources
+F:\C#\binsupport\binsupport\obj\Release\binsupport.csproj.GenerateResource.Cache
+F:\C#\binsupport\binsupport\obj\Release\binsupport.csproj.CoreCompileInputs.cache
+F:\C#\binsupport\binsupport\obj\Release\binsupport.exe
+F:\C#\binsupport\binsupport\obj\Release\binsupport.pdb

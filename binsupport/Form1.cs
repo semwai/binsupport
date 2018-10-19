@@ -162,11 +162,11 @@ namespace binsupport
                 strCmdText += f + " ";
             }*/
           
-            strCmdText+= "-nostdlib -masm=intel "+path+"\\C\\temp\\all.c -o " + path + "\\Res\\start.bin";
+            strCmdText+= " -w -nostdlib -masm=intel "+path+"\\C\\temp\\all.c -o " + path + "\\Res\\start.bin";
             //strCmdText = " -c  -w -masm=intel "+path+"\\C\\*.c";
             //MessageBox.Show("gcc.exe"+strCmdText);
             var gcc1 = System.Diagnostics.Process.Start("gcc.exe", strCmdText);
-            
+            gcc1.WaitForExit(1000);
             Thread.Sleep(1000);
 
 

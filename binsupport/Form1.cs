@@ -48,6 +48,7 @@ namespace binsupport
             }*/
             EnableInterface();
             System.IO.Directory.CreateDirectory(path + "\\C");
+            System.IO.Directory.CreateDirectory(path + "\\C\\temp");
             System.IO.Directory.CreateDirectory(path + "\\Asm");
             System.IO.Directory.CreateDirectory(path + "\\Res");
             var configfile = System.IO.File.Create(path + "\\config.json");  
@@ -145,17 +146,36 @@ namespace binsupport
 
             IEnumerable<string> files =  System.IO.Directory.EnumerateFiles(path+"\\C\\");
             string strCmdText = "";
-            foreach (var f in files)
+
+            using (var destStream = File.Create(path+"\\C\\temp\\all.c"))
+            {
+                foreach (var file in files)
+                {
+                    using (var srcStream = File.OpenRead(file)) srcStream.CopyTo(destStream);
+                }
+            }
+
+
+           /* foreach (var f in files)
             {
                 // MessageBox.Show(f);
                 strCmdText += f + " ";
-            }
+            }*/
           
-            strCmdText+= "-nostdlib -masm=intel -o " + path + "\\Res\\start.bin";
+            strCmdText+= "-nostdlib -masm=intel "+path+"\\C\\temp\\all.c -o " + path + "\\Res\\start.bin";
+            //strCmdText = " -c  -w -masm=intel "+path+"\\C\\*.c";
+            //MessageBox.Show("gcc.exe"+strCmdText);
+            var gcc1 = System.Diagnostics.Process.Start("gcc.exe", strCmdText);
             
-            System.Diagnostics.Process.Start("gcc.exe", strCmdText);
             Thread.Sleep(1000);
-           
+
+
+            //strCmdText = " -o " + path + "\\Res\\start.bin" +
+            //    "-nostdlib " + path + "\\C\\*.o";
+           // System.Diagnostics.Process.Start("gcc.exe", strCmdText);
+            Thread.Sleep(1000);
+
+
             strCmdText = "-f bin " + path + "\\Asm\\boot.asm -o " + path + "\\res\\boot.bin";
            // MessageBox.Show(strCmdText);
             System.Diagnostics.Process.Start("nasm.exe", strCmdText);

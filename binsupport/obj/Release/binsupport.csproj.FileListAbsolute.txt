@@ -9,3 +9,4 @@ F:\C#\binsupport\binsupport\obj\Release\binsupport.csproj.GenerateResource.Cache
 F:\C#\binsupport\binsupport\obj\Release\binsupport.csproj.CoreCompileInputs.cache
 F:\C#\binsupport\binsupport\obj\Release\binsupport.exe
 F:\C#\binsupport\binsupport\obj\Release\binsupport.pdb
+F:\C#\binsupport\binsupport\obj\Release\binsupport.csprojResolveAssemblyReference.cache
